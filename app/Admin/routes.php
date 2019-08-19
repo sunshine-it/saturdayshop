@@ -10,7 +10,8 @@ Route::group([
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
 
-    $router->get('/', 'HomeController@index')->name('admin.home');
-    $router->get('users', 'UsersController@index')->name('admin.index');
+    $router->get('/', 'HomeController@index');
+    $router->get('users', 'UsersController@index');
+    $router->get('products', 'ProductsController@index');
 
 });
