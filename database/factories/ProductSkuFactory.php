@@ -9,7 +9,7 @@ $factory->define(ProductSku::class, function (Faker $faker) {
     return [
         'title'       => $faker->word,
         'description' => $faker->sentence,
-        'price'       => $faker->randomNumber(4),
-        'stock'       => $faker->randomNumber(5),
+        'price'       => $faker->randomNumber(3),
+        'stock'       => $faker->randomNumber(3),
     ];
 });
