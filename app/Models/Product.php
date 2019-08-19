@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str; // 使用访问器
 use Illuminate\Database\Eloquent\Model;
 
 // 产品信息表模型类
@@ -19,5 +20,14 @@ class Product extends Model
     public function skus()
     {
         return $this->hasMany(ProductSku::class);
+    }
+    // 访问器来输出绝对路径
+    public function getImageUrlAttribute()
+    {
+        // 如果 image 字段本身就已经是完整的 url 就直接返回
+        if (Str::startsWith($this->attributes['image'], ['http://', 'https://'])) {
+            return $this->attributes['image'];
+        }
+        return \Storage::disk('public')->url($this->attributes['image']);
     }
 }
