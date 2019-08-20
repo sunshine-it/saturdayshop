@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Exceptions\InvalidRequestException; // 使用 用户错误行为触发的异常
 
 // 商品类
 class ProductsController extends Controller
@@ -51,7 +52,7 @@ class ProductsController extends Controller
     {
         // 判断商品是否已经上架，如果没有上架则抛出异常。
         if (!$product->on_sale) {
-            throw new Exception("商品未上架");
+            throw new InvalidRequestException("商品未上架");
         }
         return view('products.show', ['product' => $product]);
     }
