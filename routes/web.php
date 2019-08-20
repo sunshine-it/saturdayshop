@@ -19,6 +19,8 @@
 Route::redirect('/', '/products')->name('root');
 // 商品列表
 Route::get('products', 'ProductsController@index')->name('products.index');
+// 商品详情(使用正则解决路由冲突)
+Route::get('products/{product}', 'ProductsController@show')->name('products.show')->where(['product' => '[0-9]+']);
 
 Auth::routes(['verify' => true]);
 
@@ -35,6 +37,5 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('products/favorites', 'ProductsController@favorites')->name('products.favorites');
 });
 
-// 商品详情(防止路由冲突，移动至此)
-Route::get('products/{product}', 'ProductsController@show')->name('products.show');
+
 
