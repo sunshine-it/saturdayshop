@@ -72,7 +72,7 @@ class ProductsController extends Controller
         if ($user->favoriteProducts()->find($product->id)) {
             return [];
         }
-        // 通过 attach() 方法将当前用户和此商品关联起来
+        // 通过 attach() 方法将当前用户和此商品关联起来（此处直接对数据库进行了插入操作）
         $user->favoriteProducts()->attach($product);
 
         return [];
@@ -82,7 +82,7 @@ class ProductsController extends Controller
     public function disfavor(Product $product, Request $request)
     {
         $user = $request->user();
-        // detach() 方法用于取消多对多的关联
+        // detach() 方法用于取消多对多的关联 （此处直接对数据库进行了删除操作）
         $user->favoriteProducts()->detach($product);
 
         return [];
