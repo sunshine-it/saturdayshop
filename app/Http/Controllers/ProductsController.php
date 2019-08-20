@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
-// 商品列表类
+// 商品类
 class ProductsController extends Controller
 {
     // 商品列表
@@ -44,5 +44,15 @@ class ProductsController extends Controller
         $products = $builder->paginate(16);
 
         return view('products.index', ['products' => $products, 'filters' => ['search' => $search, 'order' => $order],]);
+    }
+
+    // 商品详情页
+    public function show(Product $product, Request $request)
+    {
+        // 判断商品是否已经上架，如果没有上架则抛出异常。
+        if (!$product->on_sale) {
+            throw new Exception("商品未上架");
+        }
+        return view('products.show', ['product' => $product]);
     }
 }
