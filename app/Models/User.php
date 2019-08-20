@@ -48,4 +48,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Product::class, 'user_favorite_products')
                     ->withTimestamps()->orderBy('user_favorite_products.created_at', 'desc');
     }
+
+    // 与购物车的模型关联
+    public function cartItems()
+    {
+        // 一对多
+        return $this->hasMany(CartItem::class);
+    }
 }
