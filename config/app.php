@@ -229,5 +229,6 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
     ],
-
+    // 用于 延迟任务 CloseOrder  单位：秒
+    'order_ttl' => 1800,
 ];
