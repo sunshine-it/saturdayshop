@@ -9,6 +9,7 @@ use App\Models\Order;
 use Carbon\Carbon;
 use App\Exceptions\InvalidRequestException;
 use App\Jobs\CloseOrder;
+use Illuminate\Http\Request;
 
 // 订单类
 class OrdersController extends Controller
@@ -66,5 +67,16 @@ class OrdersController extends Controller
             $this->dispatch(new CloseOrder($order, config('app.order_ttl')));
             return $order;
         });
+    }
+
+    // 订单列表
+    public function index(Request $request)
+    {
+        // 使用 with 方法预加载，避免N + 1问题
+        $orders = Order::query()->with(['items.product', 'items.productSku'])
+                    ->where('user_id', $request->user()->id)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate();
+        return view('orders.index', ['orders' => $orders]);
     }
 }
