@@ -79,4 +79,12 @@ class OrdersController extends Controller
                     ->paginate();
         return view('orders.index', ['orders' => $orders]);
     }
+
+    // 订单详情页
+    public function show(Order $order, Request $request)
+    {
+        $this->authorize('own', $order);
+        //  load() 方法 延迟预加载
+        return view('orders.show', ['order' => $order->load(['items.productSku', 'items.product'])]);
+    }
 }
