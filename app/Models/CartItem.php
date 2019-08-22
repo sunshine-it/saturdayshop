@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// 购买车模型
+// 购物车模型
 class CartItem extends Model
 {
     //
