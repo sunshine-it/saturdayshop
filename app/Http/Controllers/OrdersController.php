@@ -64,9 +64,11 @@ class OrdersController extends Controller
             // 将下单的商品从购物车中移除 | collect() 辅助函数快速取得所有 SKU ID
             $skuIds = collect($items)->pluck('sku_id');
             $user->cartItems()->whereIn('product_sku_id', $skuIds)->delete();
-            $this->dispatch(new CloseOrder($order, config('app.order_ttl')));
             return $order;
         });
+        // 触发 job 任务执行队列
+        $this->dispatch(new CloseOrder($order, config('app.order_ttl')));
+        return $order;
     }
 
     // 订单列表
