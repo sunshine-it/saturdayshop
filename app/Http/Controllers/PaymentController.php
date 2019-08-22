@@ -24,6 +24,7 @@ class PaymentController extends Controller
             'out_trade_no' => $order->no, // 订单编号，需保证在商户端不重复
             'total_amount' => $order->total_amount, // 订单金额，单位元，支持小数点后两位
             'subject'      => '支付 Sat Shop 的订单：'.$order->no, // 订单标题
+            'time_express' => '30m', // 超时支付宝网页会自动跳转到 该支付单号已关闭的页面(单位：m分 d天)
         ]);
     }
 
