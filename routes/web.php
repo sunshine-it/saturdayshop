@@ -40,6 +40,8 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('payment/{order}/alipay', 'PaymentController@payByAlipay')->name('payment.alipay');
     Route::get('payment/alipay/return', 'PaymentController@alipayReturn')->name('payment.alipay.return');
     Route::get('payment/{order}/wechat', 'PaymentController@payByWechat')->name('payment.wechat');
+    // 客户确认收货路由
+    Route::post('orders/{order}/received', 'OrdersController@received')->name('orders.received');
 });
 // 支付宝回调通知
 Route::post('payment/alipay/notify', 'PaymentController@alipayNotify')->name('payment.alipay.notify');
