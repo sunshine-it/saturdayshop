@@ -35,12 +35,12 @@ class OrdersController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function show($id, Content $content)
+    public function show(Order $order, Content $content)
     {
+        // body 方法可以接受 Laravel 的视图作为参数
         return $content
-            ->header('Detail')
-            ->description('description')
-            ->body($this->detail($id));
+            ->header('查看订单')
+            ->body(view('admin.orders.show', ['order' => $order]));
     }
 
     /**
