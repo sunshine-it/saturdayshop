@@ -19,7 +19,8 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        //
+        // 服务器端回调地址加入 CSRF 校验白名单
         'payment/alipay/notify',
+        'payment/wechat/notify',
     ];
 }

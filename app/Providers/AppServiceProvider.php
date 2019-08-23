@@ -36,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         // 往服务容器中注入一个名为 wechat_pay 的单例对象
         $this->app->singleton('wechat_pay', function () {
             $config = config('pay.wechat');
+            $config['notify_url'] = 'http://requestbin.net/r/1m66vmr1';
             // 判断当前项目运行环境是否为线上环境
             if (app()->environment() !== 'production') {
                 $config['log']['level'] = Logger::DEBUG;
