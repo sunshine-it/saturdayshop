@@ -118,4 +118,10 @@ class Order extends Model
         return $no;
     }
 
+    public function couponCode()
+    {
+        // 一对一
+        return $this->belongsTo(CouponCode::class);
+    }
+
 }
