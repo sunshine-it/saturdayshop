@@ -47,6 +47,8 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::post('orders/{order}/review', 'OrdersController@sendReview')->name('orders.review.store');
     // 申请退款路由
     Route::post('orders/{order}/apply_refund', 'OrdersController@applyRefund')->name('orders.apply_refund');
+    // 用户的优惠卷列表
+    Route::get('coupon_codes/{code}', 'CouponCodesController@show')->name('coupon_codes.show');
 });
 // 支付宝回调通知
 Route::post('payment/alipay/notify', 'PaymentController@alipayNotify')->name('payment.alipay.notify');
