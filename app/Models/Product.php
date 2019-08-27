@@ -16,10 +16,17 @@ class Product extends Model
     protected $casts = [
         'on_sale' => 'boolean', // on_sale 是一个布尔类型的字段
     ];
-    // 与商品SKU关联
+    // 与商品 SKU 关联
     public function skus()
     {
+        // 一对多 （一件商品 有多个 sku ）
         return $this->hasMany(ProductSku::class);
+    }
+    // 商品模型与商品类目模型的关联关系
+    public function category()
+    {
+        // 一对一
+        return $this->belongsTo(Category::class);
     }
     // 访问器来输出绝对路径
     public function getImageUrlAttribute()
