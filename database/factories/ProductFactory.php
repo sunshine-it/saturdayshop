@@ -24,6 +24,8 @@ $factory->define(Product::class, function (Faker $faker) {
         "https://source.unsplash.com/user/erondu",
         "https://acg.toubiec.cn/random.php",
     ]);
+    // 从数据库中随机取一个类目
+    $category = \App\Models\category::query()->where('is_directory', false)->inRandomOrder()->first();
     return [
         'title'        => $faker->word,
         'description'  => $faker->sentence,
@@ -33,5 +35,8 @@ $factory->define(Product::class, function (Faker $faker) {
         'sold_count'   => 0,
         'review_count' => 0,
         'price'        => 0,
+        // 将取出的类目 ID 赋给 category_id 字段
+        // 如果数据库中没有类目则 $category 为 null，同样 category_id 也设成 null
+        'category_id'  => $category ? $category->id : null,
     ];
 });
