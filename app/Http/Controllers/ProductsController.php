@@ -7,11 +7,14 @@ use App\Models\Product;
 use App\Exceptions\InvalidRequestException; // 使用 用户错误行为触发的异常
 use App\Models\OrderItem;
 use App\Models\Category;
+// use App\Services\CategoryService; // 使用商品类目树
 
 // 商品类
 class ProductsController extends Controller
 {
-    // 商品列表
+    // 商品列表 使用 Laravel 的依赖注入，自动创建 $categoryService 对象
+    // public function index(Request $request, CategoryService $categoryService)
+    // 使用了 ViewComposer 往模板里注入了变量
     public function index(Request $request)
     {
         // 创建一个查询构造器
@@ -68,6 +71,8 @@ class ProductsController extends Controller
             'filters'  => ['search' => $search, 'order' => $order],
             // 等价于 isset($category) ? $category : null
             'category' => $category ?? null,
+            // 将类目树传递给模板文件
+            // 'categoryTree' => $categoryService->getCategoryTree(),  // 使用了 viewcomposer 进行模版渲染
         ]);
     }
 
