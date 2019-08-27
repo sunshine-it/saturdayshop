@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Exceptions\InternalException;
 
-// 产品的 SKU 表模型类
+// 商品的 SKU 表模型类
 class ProductSku extends Model
 {
     //
