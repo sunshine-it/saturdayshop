@@ -11,7 +11,9 @@ use App\Listeners\UpdateProductSoldCount;
 use App\Listeners\SendOrderPaidMail;
 use App\Events\OrderReviewed;
 use App\Listeners\UpdateProductRating;
+use App\Listeners\UpdateCrowdfundingProductProgress;
 
+// 注册一下事件与监听器
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -26,6 +28,7 @@ class EventServiceProvider extends ServiceProvider
         OrderPaid::class => [
             UpdateProductSoldCount::class,  // 更新商品销量的监听器
             SendOrderPaidMail::class,  // 执行发送邮件的动作
+            UpdateCrowdfundingProductProgress::class, // 更新众筹商品销量的监听器
         ],
         OrderReviewed::class => [
             UpdateProductRating::class,
