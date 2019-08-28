@@ -19,6 +19,8 @@ class UserAddress extends Model
     ];
     protected $dates = ['last_used_at'];
 
+    protected $appends = ['full_address'];
+
     // public function user() 与 User 模型关联，关联关系是一对多
     public function user()
     {

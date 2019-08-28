@@ -13,6 +13,8 @@ use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\SendReviewRequest;
 use App\Events\OrderReviewed;
 use App\Http\Requests\ApplyRefundRequest; // 使用申请退款类
+use App\Http\Requests\CrowdFundingOrderRequest; // 使用众筹下单请求
+use App\Models\ProductSku;
 
 // 订单类
 class OrdersController extends Controller
@@ -139,4 +141,16 @@ class OrdersController extends Controller
         ]);
         return $order;
     }
+
+    // 创建一个新的 crowdfunding 方法用于接受众筹商品下单请求
+    public function crowdfunding(CrowdFundingOrderRequest $request, OrderService $orderService)
+    {
+        $user    = $request->user();
+        $sku     = ProductSku::find($request->input('sku_id'));
+        $address = UserAddress::find($request->input('address_id'));
+        $amount  = $request->input('amount');
+
+        return $orderService->crowdfunding($user, $address, $sku, $amount);
+    }
+
 }
