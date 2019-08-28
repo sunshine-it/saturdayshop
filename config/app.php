@@ -231,4 +231,6 @@ return [
     ],
     // 用于 延迟任务 CloseOrder  单位：秒
     'order_ttl' => 1800,
+    // 使用 ngrok
+    'ngrok_url' => env('NGROK_URL'),
 ];
