@@ -14,6 +14,7 @@ use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\Admin\HandleRefundRequest;  // 使用拒绝退款
 use App\Exceptions\InternalException;
 use App\Models\CrowdfundingProduct;
+use App\Services\OrderService; // 使用退款逻辑
 
 // 管理后台
 class OrdersController extends Controller
@@ -74,7 +75,7 @@ class OrdersController extends Controller
     }
 
     // handleRefund() 方法作为处理退款
-    public function handleRefund(Order $order, HandleRefundRequest $request)
+    public function handleRefund(Order $order, HandleRefundRequest $request, OrderService $orderService)
     {
         // 判断订单状态是否正确
         if ($order->refund_status !== Order::REFUND_STATUS_APPLIED) {
@@ -91,7 +92,9 @@ class OrdersController extends Controller
                 'extra' => $extra,
             ]);
             // 调用退款逻辑
-            $this->_refundOrder($order);
+            // $this->_refundOrder($order);
+            // 改为调用封装的退款逻辑方法
+            $orderService->refundOrder($order);
         }
         else {
             // 将拒绝退款理由放到订单的 extra 字段中
@@ -141,6 +144,7 @@ class OrdersController extends Controller
         return $grid;
     }
 
+    /*
     // 调用退款方法
     protected function _refundOrder(Order $order)
     {
@@ -202,32 +206,5 @@ class OrdersController extends Controller
 
         return ;
     }
-
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form()
-    {
-        $form = new Form(new Order);
-
-        $form->text('no', 'No');
-        $form->number('user_id', 'User id');
-        $form->textarea('address', 'Address');
-        $form->decimal('total_amount', 'Total amount');
-        $form->textarea('remark', 'Remark');
-        $form->datetime('paid_at', 'Paid at')->default(date('Y-m-d H:i:s'));
-        $form->text('payment_method', 'Payment method');
-        $form->text('payment_no', 'Payment no');
-        $form->text('refund_status', 'Refund status')->default('pending');
-        $form->text('refund_no', 'Refund no');
-        $form->switch('closed', 'Closed');
-        $form->switch('reviewed', 'Reviewed');
-        $form->text('ship_status', 'Ship status')->default('pending');
-        $form->textarea('ship_data', 'Ship data');
-        $form->textarea('extra', 'Extra');
-
-        return $form;
-    }
+    */
 }

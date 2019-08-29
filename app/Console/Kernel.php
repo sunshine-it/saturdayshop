@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+// 注册定时任务
 class Kernel extends ConsoleKernel
 {
     /**
@@ -26,6 +27,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        // 注册这个(退款逻辑)的定时任务 每分钟执行一次
+        $schedule->command('cron:finish-crowdfunding')->everyMinute();
     }
 
     /**

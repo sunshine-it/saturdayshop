@@ -8,11 +8,7 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
+    // 支付回调方法
     public function register()
     {
         // 往服务容器中注入一个名为 alipay 的单例对象
@@ -51,11 +47,7 @@ class AppServiceProvider extends ServiceProvider
         });
     }
 
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
+    // 公共渲染 ViewComposers
     public function boot()
     {
         // 当 Laravel 渲染 products.index 和 products.show 模板时，就会使用 CategoryTreeComposer 这个来注入类目树变量
