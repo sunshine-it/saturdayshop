@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Events\OrderPaid;
+use Endroid\QrCode\QrCode;
 use App\Models\Installment;
 use Illuminate\Http\Request;
 use App\Exceptions\InvalidRequestException;
@@ -74,6 +75,7 @@ class InstallmentsController extends Controller
         return view('pages.success', ['msg' => '付款成功']);
     }
 
+    /*
     // 支付宝后端回调
     public function alipayNotify()
     {
@@ -128,5 +130,95 @@ class InstallmentsController extends Controller
         });
 
         return app('alipay')->success();
+    }
+    */
+
+    // 微信分期付款
+    public function payByWechat(Installment $installment)
+    {
+        if ($installment->order->closed) {
+            throw new InvalidRequestException('对应的商品订单已被关闭');
+        }
+        if ($installment->status === Installment::STATUS_FINISHED) {
+            throw new InvalidRequestException('该分期订单已结清');
+        }
+        if (!$nextItem = $installment->items()->whereNull('paid_at')->orderBy('sequence')->first()) {
+            throw new InvalidRequestException('该分期订单已结清');
+        }
+
+        $wechatOrder = app('wechat_pay')->scan([
+            'out_trade_no' => $installment->no.'_'.$nextItem->sequence,
+            'total_fee'    => $nextItem->total * 100,
+            'body'         => '支付 Sat Shop 的分期订单：'.$installment->no,
+            'notify_url'   => ngrok_url('installments.wechat.notify'), // 微信后端分期支付通知
+        ]);
+        // 把要转换的字符串作为 QrCode 的构造函数参数
+        $qrCode = new QrCode($wechatOrder->code_url);
+
+        // 将生成的二维码图片数据以字符串形式输出，并带上相应的响应类型
+        return response($qrCode->writeString(), 200, ['Content-Type' => $qrCode->getContentType()]);
+    }
+
+    // 调整原本的支付宝回调，改为调用 paid 方法，
+    public function alipayNotify()
+    {
+        $data = app('alipay')->verify();
+        // 如果订单状态不是成功或者结束，则不走后续的逻辑
+        if (!in_array($data->trade_status, ['TRADE_SUCCESS', 'TRADE_FINISHED'])) {
+            return app('alipay')->success();
+        }
+        if ($this->paid($data->out_trade_no, 'alipay', $data->trade_no)) {
+            return app('alipay')->success();
+        }
+
+        return 'fail';
+    }
+
+    // 微信后端分期支付回调
+    public function wechatNotify()
+    {
+        $data = app('wechat_pay')->verify();
+        if ($this->paid($data->out_trade_no, 'wechat', $data->transaction_id)) {
+            return app('wechat_pay')->success();
+        }
+
+        return 'fail';
+    }
+
+    protected function paid($outTradeNo, $paymentMethod, $paymentNo)
+    {
+        list($no, $sequence) = explode('_', $outTradeNo);
+        if (!$installment = Installment::where('no', $no)->first()) {
+            return false;
+        }
+        if (!$item = $installment->items()->where('sequence', $sequence)->first()) {
+            return false;
+        }
+        if ($item->paid_at) {
+            return true;
+        }
+
+        \DB::transaction(function () use ($paymentNo, $paymentMethod, $no, $installment, $item) {
+            $item->update([
+                'paid_at'        => Carbon::now(),
+                'payment_method' => $paymentMethod,
+                'payment_no'     => $paymentNo,
+            ]);
+
+            if ($item->sequence === 0) {
+                $installment->update(['status' => Installment::STATUS_REPAYING]);
+                $installment->order->update([
+                    'paid_at'        => Carbon::now(),
+                    'payment_method' => 'installment',
+                    'payment_no'     => $no,
+                ]);
+                event(new OrderPaid($installment->order));
+            }
+            if ($item->sequence === $installment->count - 1) {
+                $installment->update(['status' => Installment::STATUS_FINISHED]);
+            }
+        });
+
+        return true;
     }
 }

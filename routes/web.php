@@ -61,6 +61,8 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     Route::get('installments/{installment}/alipay', 'InstallmentsController@payByAlipay')->name('installments.alipay');
     // 支付回调前端
     Route::get('installments/alipay/return', 'InstallmentsController@alipayReturn')->name('installments.alipay.return');
+    // 微信分期支付
+    Route::get('installments/{installment}/wechat', 'InstallmentsController@payByWechat')->name('installments.wechat');
 });
 // 后端回调不能放在 auth 中间件中
 // 支付宝回调通知
@@ -71,6 +73,8 @@ Route::post('payment/wechat/notify', 'PaymentController@wechatNotify')->name('pa
 Route::post('payment/wechat/refund_notify', 'PaymentController@wechatRefundNotify')->name('payment.wechat.refund_notify');
 // 支付宝分期后端回调通知
 Route::post('installments/alipay/notify', 'InstallmentsController@alipayNotify')->name('installments.alipay.notify');
+// 微信分期后端回调通知
+Route::post('installments/wechat/notify', 'InstallmentsController@wechatNotify')->name('installments.wechat.notify');
 
 
 
