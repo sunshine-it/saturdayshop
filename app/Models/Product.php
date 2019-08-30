@@ -49,4 +49,23 @@ class Product extends Model
     {
         return $this->hasOne(CrowdfundingProduct::class);
     }
+    // 商品和商品属性的关联关系
+    public function properties()
+    {
+        // 一对多（一个商品可有多个商品属性 ）
+        return $this->hasMany(ProductProperty::class);
+    }
+    // 创建一个访问器来解决商品属性的重复问题
+    public function getGroupedPropertiesAttribute()
+    {
+        // $this->properties 获取当前商品的商品属性集合（一个 Collection 对象）
+        return $this->properties
+            // 按照属性名聚合，返回的集合的 key 是属性名，value 是包含该属性名的所有属性集合
+            ->groupBy('name')
+            ->map(function ($properties) {
+                // 使用 map 方法将属性集合变为属性值集合
+                return $properties->pluck('value')->all();
+            });
+    }
+
 }
