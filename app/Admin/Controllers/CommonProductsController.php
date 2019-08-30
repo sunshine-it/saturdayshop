@@ -9,6 +9,7 @@ use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Grid;
 use Encore\Admin\Form;
 use Encore\Admin\Layout\Content;
+use App\Jobs\SyncOneProductToES; // 使用异步队列去同步变更的数据 (同步到 Elasticsearch)
 
 // 创建公共控制器 (封装增改查页面)
 abstract class CommonProductsController extends Controller
@@ -90,8 +91,14 @@ abstract class CommonProductsController extends Controller
             $form->text('value', '属性值')->rules('required');
         });
 
-        $form->saving(function (Form $form) {
-            $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price') ?: 0;
+        // 计算商品价格时用的是表单的 saving 事件
+        // $form->saving(function (Form $form) {
+        //     $form->model()->price = collect($form->input('skus'))->where(Form::REMOVE_FLAG_NAME, 0)->min('price') ?: 0;
+        // });
+        // 使用 saved 事件 所有类型的商品在被创建或者被修改时都能同步到 Elasticsearch
+        $form->saved(function (Form $form) {
+            $product = $form->model();
+            $this->dispatch(new SyncOneProductToES($product));
         });
 
         return $form;
