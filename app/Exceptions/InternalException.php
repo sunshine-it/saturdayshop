@@ -15,6 +15,7 @@ class InternalException extends Exception
         parent::__construct($message, $code);
         $this->msgForUser = $msgForUser;
     }
+    // 退款业务信息提示
     public function render(Request $request)
     {
         if ($request->expectsJson()) {
