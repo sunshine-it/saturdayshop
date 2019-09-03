@@ -142,7 +142,32 @@ class ProductsController extends Controller
             ->orderBy('reviewed_at', 'desc') // 按评价时间倒序
             ->limit(10) // 取出 10 条
             ->get();
-        return view('products.show', ['product' => $product, 'favored' => $favored, 'reviews' => $reviews]);
+        // 创建一个查询构造器，只搜索上架的商品，取搜索结果的前 4 个商品
+        $builder = (new ProductSearchBuilder())->onSale()->paginate(4, 1);
+        // 遍历当前商品的属性
+        foreach ($product->properties as $property) {
+            // 添加到 should 条件中
+            $builder->propertyFilter($property->name, $property->value, 'should');
+        }
+        // 设置最少匹配一半属性
+        $builder->minShouldMatch(ceil(count($product->properties) / 2));
+        $params = $builder->getParams();
+        // 同时将当前商品的 ID 排除
+        $params['body']['query']['bool']['must_not'] = [['term' => ['id' => $product->id]]];
+        // 搜索
+        $result = app('es')->search($params);
+        $similarProductIds = collect($result['hits']['hits'])->pluck('_id')->all();
+        // 根据 Elasticsearch 搜索出来的商品 ID 从数据库中读取商品数据
+        $similarProducts   = Product::query()
+            ->whereIn('id', $similarProductIds)
+            ->orderByRaw(sprintf("FIND_IN_SET(id, '%s')", join(',', $similarProductIds)))
+            ->get();
+        return view('products.show', [
+            'product' => $product,
+            'favored' => $favored,
+            'reviews' => $reviews,
+            'similar' => $similarProducts,
+        ]);
     }
 
     // 收藏
