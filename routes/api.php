@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+// 为了解决不支持对 api/user 这个闭包路由做缓存
+// use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
