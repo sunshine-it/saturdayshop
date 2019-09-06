@@ -15,6 +15,7 @@ use App\Events\OrderReviewed;
 use App\Http\Requests\ApplyRefundRequest; // 使用申请退款类
 use App\Http\Requests\CrowdFundingOrderRequest; // 使用众筹下单请求
 use App\Models\ProductSku;
+use App\Http\Requests\SeckillOrderRequest; // 秒杀订单请求
 
 // 订单类
 class OrdersController extends Controller
@@ -157,4 +158,13 @@ class OrdersController extends Controller
         return $orderService->crowdfunding($user, $address, $sku, $amount);
     }
 
+    // 用于秒杀下单
+    public function seckill(SeckillOrderRequest $request, OrderService $orderService)
+    {
+        $user    = $request->user();
+        $address = UserAddress::find($request->input('address_id'));
+        $sku     = ProductSku::find($request->input('sku_id'));
+
+        return $orderService->seckill($user, $address, $sku);
+    }
 }

@@ -8,7 +8,6 @@ use Ramsey\Uuid\Uuid;
 // 订单模型
 class Order extends Model
 {
-    //
     const REFUND_STATUS_PENDING = 'pending';
     const REFUND_STATUS_APPLIED = 'applied';
     const REFUND_STATUS_PROCESSING = 'processing';
@@ -22,6 +21,14 @@ class Order extends Model
     const TYPE_NORMAL = 'normal';
     const TYPE_CROWDFUNDING = 'crowdfunding';
 
+    const TYPE_SECKILL = 'seckill';
+
+    public static $typeMap = [
+        self::TYPE_NORMAL => '普通商品订单',
+        self::TYPE_CROWDFUNDING => '众筹商品订单',
+        self::TYPE_SECKILL => '秒杀商品订单',
+    ];
+
     public static $refundStatusMap = [
         self::REFUND_STATUS_PENDING    => '未退款',
         self::REFUND_STATUS_APPLIED    => '已申请退款',
@@ -34,11 +41,6 @@ class Order extends Model
         self::SHIP_STATUS_PENDING   => '未发货',
         self::SHIP_STATUS_DELIVERED => '已发货',
         self::SHIP_STATUS_RECEIVED  => '已收货',
-    ];
-
-    public static $typeMap = [
-        self::TYPE_NORMAL => '普通商品订单',
-        self::TYPE_CROWDFUNDING => '众筹商品订单',
     ];
 
     protected $fillable = [
@@ -98,6 +100,12 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function couponCode()
+    {
+        // 一对一
+        return $this->belongsTo(CouponCode::class);
+    }
+
     public static function findAvailableNo()
     {
         // 订单流水号前缀
@@ -126,11 +134,4 @@ class Order extends Model
 
         return $no;
     }
-
-    public function couponCode()
-    {
-        // 一对一
-        return $this->belongsTo(CouponCode::class);
-    }
-
 }
