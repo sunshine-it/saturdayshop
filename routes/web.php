@@ -10,7 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+// 秒杀
+Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
 // Route::get('/', 'PagesController@root')->name('root');
 Route::redirect('/', '/products')->name('root');
 // 商品列表
@@ -64,7 +65,7 @@ Route::group(['middleware' => ['auth', 'verified']], function() {
     // 微信分期支付
     Route::get('installments/{installment}/wechat', 'InstallmentsController@payByWechat')->name('installments.wechat');
     // 秒杀
-    Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
+    // Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
 });
 // 后端回调不能放在 auth 中间件中
 // 支付宝回调通知
